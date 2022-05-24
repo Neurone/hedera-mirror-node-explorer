@@ -225,6 +225,10 @@ export default defineComponent({
       fetchTransaction()
     });
 
+    watch(() => props.consensusTimestamp, () => {
+      fetchTransaction()
+    });
+
     const routeName = computed(() => {
       return entity?.value?.routeName
     })
