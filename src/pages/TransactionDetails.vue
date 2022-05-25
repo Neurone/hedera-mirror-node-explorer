@@ -130,7 +130,7 @@
             <Property :id="'nodeAccount'">
               <template v-slot:name>Node Account</template>
               <template v-slot:value>
-                <AccountLink v-if="transaction" v-bind:accountId="transaction?.node" v-bind:show-extra="true"/>
+                <AccountLink v-if="transaction" :accountId="transaction?.node" :show-extra="true" :show-none="true"/>
               </template>
             </Property>
             <Property :id="'duration'">
