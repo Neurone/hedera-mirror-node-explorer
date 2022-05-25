@@ -162,7 +162,7 @@
                     query: { t: tx.consensus_timestamp }
                   }">
                     <span class="mr-2">{{ '#' + tx.nonce }}</span>
-                    <span class="h-is-smaller">{{ makeTypeLabel(tx.name) }}</span>
+                    <span>{{ makeTypeLabel(tx.name) }}</span>
                     <br/></router-link>
                 </div>
               </template>
