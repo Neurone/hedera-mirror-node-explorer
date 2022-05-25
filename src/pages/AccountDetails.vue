@@ -52,7 +52,7 @@
                 <div v-if="account" class="h-is-tertiary-text"><HbarAmount v-bind:amount="balance" v-bind:show-extra="true"/></div>
                 <div v-if="displayAllTokenLinks">
                   <router-link :to="{name: 'AccountBalances', params: {accountId: accountId}}">
-                    See all token balances
+                    Show all token balances
                   </router-link>
                 </div>
                 <div v-else>
