@@ -98,15 +98,15 @@ describe('Transaction Navigation', () => {
         cy.url().should('include', normalizeTransactionId(transactionId))
         cy.url().should('include', consensusTimestamp)
 
-        cy.get('#allTransactionsLink')
-            .find('a')
-            .click()
-            .then(($id) => {
-                // cy.log('Selected operator Id: ' + $id.text())
-                cy.url().should('include', '/testnet/transactionsById/')
-                cy.url().should('include', normalizeTransactionId(transactionId))
-                cy.contains('Transactions with ID ' + transactionId)
-            })
+        // cy.get('#allTransactionsLink')
+        //     .find('a')
+        //     .click()
+        //     .then(($id) => {
+        //         // cy.log('Selected operator Id: ' + $id.text())
+        //         cy.url().should('include', '/testnet/transactionsById/')
+        //         cy.url().should('include', normalizeTransactionId(transactionId))
+        //         cy.contains('Transactions with ID ' + transactionId)
+        //     })
     })
 
     it('should detect navigation to unknown transaction ID', () => {
