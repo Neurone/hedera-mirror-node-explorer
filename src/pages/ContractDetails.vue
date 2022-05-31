@@ -90,15 +90,13 @@
             <Property :id="'autoRenewPeriod'">
               <template v-slot:name>Auto Renew Period</template>
               <template v-slot:value>
-                {{ formatSeconds(contract?.auto_renew_period) }}
+                <DurationValue v-bind:number-value="contract?.auto_renew_period"/>
               </template>
             </Property>
             <Property :id="'code'">
               <template v-slot:name>Code</template>
               <template v-slot:value>
-                <textarea v-if="contract?.bytecode" v-model="contract.bytecode" readonly rows="4"
-                          style="width:100%; font-family: novamonoregular,monospace"></textarea>
-                <div v-else class="column has-text-grey">None</div>
+                <ByteCodeValue :byte-code="contract?.bytecode"/>
               </template>
             </Property>
           </div>
@@ -131,14 +129,19 @@
             <Property :id="'file'">
               <template v-slot:name>File</template>
               <template v-slot:value>
-                <div v-if="contract?.file_id">{{ contract?.file_id }}</div>
-                <div v-else class="has-text-grey">None</div>
+                <StringValue :string-value="contract?.file_id"/>
               </template>
             </Property>
             <Property :id="'solidity'">
               <template v-slot:name>Solidity</template>
               <template v-slot:value>
                 <HexaValue :byteString="formattedSolidity" :show-none="true"/>
+              </template>
+            </Property>
+            <Property :id="'evmAddress'">
+              <template v-slot:name>EVM Address</template>
+              <template v-slot:value>
+                <HexaValue :byte-string="contract?.evm_address" :show-none="true"/>
               </template>
             </Property>
             <Property :id="'ethereumAddress'">
@@ -187,21 +190,22 @@ import KeyValue from "@/components/values/KeyValue.vue";
 import HexaValue from "@/components/values/HexaValue.vue";
 import ContractTransactionTable from "@/components/contract/ContractTransactionTable.vue";
 import PlayPauseButton, {PlayPauseState} from "@/components/PlayPauseButton.vue";
-import {formatSeconds} from "@/utils/Duration";
 import AccountLink from "@/components/values/AccountLink.vue";
 import TimestampValue from "@/components/values/TimestampValue.vue";
+import DurationValue from "@/components/values/DurationValue.vue";
 import DashboardCard from "@/components/DashboardCard.vue";
 import HbarAmount from "@/components/values/HbarAmount.vue";
 import TokenAmount from "@/components/values/TokenAmount.vue";
 import BlobValue from "@/components/values/BlobValue.vue";
+import StringValue from "@/components/values/StringValue.vue";
+import ByteCodeValue from "@/components/values/ByteCodeValue.vue";
 import Footer from "@/components/Footer.vue";
 import NotificationBanner from "@/components/NotificationBanner.vue";
 import {EntityID} from "@/utils/EntityID";
 import Property from "@/components/Property.vue";
 import {makeEthAddressForAccount} from "@/schemas/HederaUtils";
 import EthAddress from "@/components/values/EthAddress.vue";
-import {byteToHex} from "@/utils/B64Utils";
-import base32Decode from "base32-decode";
+import {base32ToAlias, byteToHex} from "@/utils/B64Utils";
 
 const MAX_TOKEN_BALANCES = 3
 
@@ -210,6 +214,7 @@ export default defineComponent({
   name: 'ContractDetails',
 
   components: {
+    ByteCodeValue,
     Property,
     NotificationBanner,
     Footer,
@@ -219,10 +224,12 @@ export default defineComponent({
     DashboardCard,
     AccountLink,
     TimestampValue,
+    DurationValue,
     PlayPauseButton,
     ContractTransactionTable,
     KeyValue,
     HexaValue,
+    StringValue,
     EthAddress
   },
 
@@ -328,7 +335,7 @@ export default defineComponent({
 
     const aliasByteString = computed(() => {
       const alias = account.value?.alias
-      return alias ? byteToHex(new Uint8Array(base32Decode(alias, 'RFC4648'))) : null
+      return alias ? byteToHex(new Uint8Array(base32ToAlias(alias))) : null
     })
 
     return {
@@ -346,10 +353,7 @@ export default defineComponent({
       formattedSolidity,
       normalizedContractId,
       ethereumAddress,
-      aliasByteString,
-
-      // From TimeUtils
-      formatSeconds
+      aliasByteString
     }
   },
 });

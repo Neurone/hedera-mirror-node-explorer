@@ -32,7 +32,12 @@
       <template v-slot:title>
         <span class="h-is-primary-title">Transaction </span>
         <span class="h-is-secondary-text mr-3">{{ transaction ? convertTransactionId(transactionId) : "" }}</span>
-     </template>
+        <span v-if="showAllTransactionVisible" class="is-inline-block" id="allTransactionsLink">
+          <router-link :to="{name: 'TransactionsById', params: {transactionId: transactionId}}">
+            <span class="h-is-property-text has-text-grey">See all transactions with the same ID</span>
+          </router-link>
+        </span>
+      </template>
 
       <template v-slot:table>
 
@@ -44,7 +49,7 @@
             <Property :id="'transactionType'">
               <template v-slot:name>Type</template>
               <template v-slot:value>
-                {{ transaction ? makeTypeLabel(transaction.name) : "" }}
+                <StringValue :string-value="transaction ? makeTypeLabel(transaction.name) : undefined"/>
               </template>
             </Property>
             <Property :id="'consensusAt'">
@@ -130,13 +135,13 @@
             <Property :id="'nodeAccount'">
               <template v-slot:name>Node Account</template>
               <template v-slot:value>
-                <AccountLink v-if="transaction" :accountId="transaction?.node" :show-extra="true" :show-none="true"/>
+                <AccountLink v-bind:accountId="transaction?.node" v-bind:show-extra="true"/>
               </template>
             </Property>
             <Property :id="'duration'">
               <template v-slot:name>Duration</template>
               <template v-slot:value>
-                {{ transaction ? transaction.valid_duration_seconds : "" }} seconds
+                <DurationValue v-bind:string-value="transaction?.valid_duration_seconds"/>
               </template>
             </Property>
             <Property v-if="parentTransaction" :id="'parentTransaction'">
@@ -146,7 +151,7 @@
                   name: 'TransactionDetails',
                   params: { transactionId: parentTransaction.transaction_id },
                   query: { t: parentTransaction.consensus_timestamp }
-                }">Show transaction</router-link>
+                }">{{ makeTypeLabel(parentTransaction.name) }}</router-link>
               </template>
             </Property>
             <Property v-if="childTransactions.length" :id="'children'">
@@ -192,7 +197,13 @@
 
 import {computed, defineComponent, inject, onBeforeMount, ref, watch} from 'vue';
 import axios, {AxiosResponse} from "axios";
-import {Transaction, TransactionByIdResponse, TransactionType} from "@/schemas/HederaSchemas";
+import {
+  AccountBalanceTransactions,
+  ContractResponse,
+  Transaction,
+  TransactionByIdResponse,
+  TransactionType
+} from "@/schemas/HederaSchemas";
 import {EntityDescriptor} from "@/utils/EntityDescriptor"
 import {normalizeTransactionId, TransactionID} from "@/utils/TransactionID";
 import {computeNetAmount, makeOperatorAccountLabel, makeTypeLabel} from "@/utils/TransactionTools";
@@ -204,10 +215,12 @@ import EntityLink from "@/components/values/EntityLink.vue";
 import DashboardCard from "@/components/DashboardCard.vue";
 import HbarAmount from "@/components/values/HbarAmount.vue";
 import BlobValue from "@/components/values/BlobValue.vue";
+import StringValue from "@/components/values/StringValue.vue";
 import TransferGraphSection from "@/components/transfer_graphs/TransferGraphSection.vue";
 import Footer from "@/components/Footer.vue";
 import NotificationBanner from "@/components/NotificationBanner.vue";
 import Property from "@/components/Property.vue";
+import DurationValue from "@/components/values/DurationValue.vue";
 
 const MAX_INLINE_CHILDREN = 3
 
@@ -222,6 +235,7 @@ export default defineComponent({
     HbarAmount, BlobValue,
     DashboardCard, EntityLink, AccountLink,
     HexaValue, TimestampValue, TransferGraphSection,
+    StringValue, DurationValue
   },
 
   props: {
@@ -246,6 +260,10 @@ export default defineComponent({
     let parentTransaction = ref<Transaction | null>(null)
     let childTransactions = ref<Array<Transaction>>([])
 
+    const showAllTransactionVisible = computed(() => {
+      const count = response.value?.data.transactions?.length ?? 0
+      return count >= 2
+    })
     const displayAllChildrenLinks = computed(() => childTransactions.value.length > MAX_INLINE_CHILDREN )
 
     const notification = computed(() => {
@@ -298,18 +316,33 @@ export default defineComponent({
                 transaction.value = filter(r.data.transactions, props.consensusTimestamp)
                 if (transaction.value != null) {
                   netAmount.value = computeNetAmount(transaction.value)
-                  entity.value = EntityDescriptor.makeEntityDescriptor(transaction.value)
-                  scheduledTransaction.value = (transaction.value.name === TransactionType.SCHEDULECREATE)
-                      ? lookupScheduledTransaction(r.data.transactions)
-                      : null
-                  schedulingTransaction.value = transaction.value.scheduled
-                      ? lookupSchedulingTransaction(r.data.transactions)
-                      : null
-                  const children = lookupChildTransactions(r.data.transactions)
-                  if (children.length && transaction.value.nonce && transaction.value.nonce > 0) {
-                    parentTransaction.value = lookupParentTransaction(r.data.transactions)
+
+                  if (transaction.value.entity_id && transaction.value.name === TransactionType.ETHEREUMTRANSACTION) {
+                    axios.get<ContractResponse>("api/v1/contracts/" + transaction.value.entity_id)
+                        .then(() => entity.value = new EntityDescriptor("Contract ID", "ContractDetails"))
+                        .catch(() => {
+                          axios.get<AccountBalanceTransactions>("api/v1/accounts/" + transaction.value?.entity_id)
+                              .then(() => entity.value = new EntityDescriptor("Account ID", "AccountDetails"))
+                              .catch(() => entity.value = new EntityDescriptor("Entity ID", ""))
+
+                        })
                   } else {
-                    childTransactions.value = children
+                    entity.value = EntityDescriptor.makeEntityDescriptor(transaction.value)
+                  }
+
+                  if (r.data.transactions.length >= 2) {
+                    scheduledTransaction.value = (transaction.value.name === TransactionType.SCHEDULECREATE)
+                        ? lookupScheduledTransaction(r.data.transactions)
+                        : null
+                    schedulingTransaction.value = transaction.value.scheduled
+                        ? lookupSchedulingTransaction(r.data.transactions)
+                        : null
+                    const children = lookupChildTransactions(r.data.transactions)
+                    if (children.length && transaction.value.nonce && transaction.value.nonce > 0) {
+                      parentTransaction.value = lookupParentTransaction(r.data.transactions)
+                    } else {
+                      childTransactions.value = children
+                    }
                   }
                 }
               }
@@ -360,6 +393,7 @@ export default defineComponent({
       makeTypeLabel,
       computeNetAmount,
       makeOperatorAccountLabel,
+      showAllTransactionVisible,
       displayAllChildrenLinks,
       scheduledTransaction,
       schedulingTransaction,

@@ -23,10 +23,13 @@
 <!-- --------------------------------------------------------------------------------------------------------------- -->
 
 <template>
-  <div class="has-text-centered h-is-tertiary-text-text has-text-grey mb-4">
-    <span v-if="initialLoading">Loading…</span>
-    <span >No Data</span>
-  </div>
+
+  <span v-if="stringValue">{{ stringValue }}</span>
+
+  <span v-else-if="initialLoading"/>
+
+  <span v-else class="has-text-grey">None</span>
+
 </template>
 
 <!-- --------------------------------------------------------------------------------------------------------------- -->
@@ -35,23 +38,26 @@
 
 <script lang="ts">
 
-import {defineComponent, inject, ref} from "vue";
+import {defineComponent, inject, ref} from 'vue';
 import {initialLoadingKey} from "@/AppKeys";
 
 export default defineComponent({
-  name: "EmptyTable",
+  name: 'StringValue',
+
+  props: {
+    stringValue: String,
+  },
 
   setup() {
     const initialLoading = inject(initialLoadingKey, ref(false))
     return { initialLoading }
   }
-})
+});
 
 </script>
 
 <!-- --------------------------------------------------------------------------------------------------------------- -->
-<!--                                                      STYLE                                                      -->
+<!--                                                       STYLE                                                     -->
 <!-- --------------------------------------------------------------------------------------------------------------- -->
 
-<style>
-</style>
+<style/>

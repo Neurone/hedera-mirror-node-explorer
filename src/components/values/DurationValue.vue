@@ -23,10 +23,17 @@
 <!-- --------------------------------------------------------------------------------------------------------------- -->
 
 <template>
-  <div class="has-text-centered h-is-tertiary-text-text has-text-grey mb-4">
-    <span v-if="initialLoading">Loading…</span>
-    <span >No Data</span>
-  </div>
+
+  <template v-if="formattedValue">
+    <span>{{ formattedValue }}</span>
+  </template>
+  <template v-else-if="showNone && !initialLoading">
+    <span class="has-text-grey">None</span>
+  </template>
+  <template v-else>
+    <span/>
+  </template>
+
 </template>
 
 <!-- --------------------------------------------------------------------------------------------------------------- -->
@@ -35,23 +42,49 @@
 
 <script lang="ts">
 
-import {defineComponent, inject, ref} from "vue";
+import {computed, defineComponent, inject, ref} from "vue";
+import {formatSeconds} from "@/utils/Duration";
 import {initialLoadingKey} from "@/AppKeys";
 
 export default defineComponent({
-  name: "EmptyTable",
+  name: "DurationValue",
 
-  setup() {
+  props: {
+    numberValue: Number,
+    stringValue: String,
+    showNone: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  setup(props) {
+
+    const formattedValue = computed(() => {
+      let result: string|null
+      if (props.numberValue) {
+        result = formatSeconds(props.numberValue)
+      } else if (props.stringValue) {
+        result = formatSeconds(props.stringValue)
+      } else {
+        result = null
+      }
+      return result
+    })
+
     const initialLoading = inject(initialLoadingKey, ref(false))
-    return { initialLoading }
+
+    return {
+      formattedValue, initialLoading,
+    }
   }
-})
+});
+
 
 </script>
 
 <!-- --------------------------------------------------------------------------------------------------------------- -->
-<!--                                                      STYLE                                                      -->
+<!--                                                       STYLE                                                     -->
 <!-- --------------------------------------------------------------------------------------------------------------- -->
 
-<style>
-</style>
+<style/>

@@ -169,6 +169,8 @@ export enum TransactionType {
     CRYPTODELETELIVEHASH = "CRYPTODELETELIVEHASH",
     CRYPTOTRANSFER = "CRYPTOTRANSFER",
     CRYPTOUPDATEACCOUNT = "CRYPTOUPDATEACCOUNT",
+    CRYPTOAPPROVEALLOWANCE = "CRYPTOAPPROVEALLOWANCE",
+    CRYPTODELETEALLOWANCE = "CRYPTODELETEALLOWANCE",
     FILEAPPEND = "FILEAPPEND",
     FILECREATE = "FILECREATE",
     FILEDELETE = "FILEDELETE",
@@ -195,6 +197,7 @@ export enum TransactionType {
     TOKENUPDATE = "TOKENUPDATE",
     TOKENWIPE = "TOKENWIPE",
     UNCHECKEDSUBMIT = "UNCHECKEDSUBMIT",
+    ETHEREUMTRANSACTION = "ETHEREUMTRANSACTION",
 }
 
 export enum TransactionResult {
@@ -249,7 +252,7 @@ export interface TokenInfo {
 
     admin_key: Key | null | undefined
     auto_renew_account: string | null | undefined   // Network entity ID in the format of shard.realm.num
-    auto_renew_period: string | null | undefined
+    auto_renew_period: string | number | null | undefined
     created_timestamp: string | undefined
     decimals: string | undefined
     deleted: boolean | null | undefined
@@ -379,6 +382,7 @@ export interface Contract {
     contract_id: string | null | undefined   // Network entity ID in the format of shard.realm.num
     created_timestamp: string | null | undefined
     deleted: boolean | undefined
+    evm_address: string | undefined
     expiration_timestamp: string | null | undefined
     file_id: string | null | undefined   // Network entity ID in the format of shard.realm.num
     memo: string | undefined

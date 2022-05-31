@@ -23,10 +23,16 @@
 <!-- --------------------------------------------------------------------------------------------------------------- -->
 
 <template>
-  <div class="has-text-centered h-is-tertiary-text-text has-text-grey mb-4">
-    <span v-if="initialLoading">Loading…</span>
-    <span >No Data</span>
-  </div>
+
+  <textarea v-if="textValue"
+            v-model="textValue"
+            readonly rows="4"
+            style="width:100%; font-family: novamonoregular,monospace"></textarea>
+
+  <span v-else-if="initialLoading"/>
+
+  <span v-else class="has-text-grey">None</span>
+
 </template>
 
 <!-- --------------------------------------------------------------------------------------------------------------- -->
@@ -35,23 +41,30 @@
 
 <script lang="ts">
 
-import {defineComponent, inject, ref} from "vue";
+import {defineComponent, inject, ref, watch} from 'vue';
 import {initialLoadingKey} from "@/AppKeys";
 
 export default defineComponent({
-  name: "EmptyTable",
+  name: 'ByteCodeValue',
 
-  setup() {
+  props: {
+    byteCode: String,
+  },
+
+  setup(props) {
+    const textValue = ref(props.byteCode)
+    watch(() => props.byteCode, () => {
+      textValue.value = props.byteCode
+    })
     const initialLoading = inject(initialLoadingKey, ref(false))
-    return { initialLoading }
+    return { textValue, initialLoading }
   }
-})
+});
 
 </script>
 
 <!-- --------------------------------------------------------------------------------------------------------------- -->
-<!--                                                      STYLE                                                      -->
+<!--                                                       STYLE                                                     -->
 <!-- --------------------------------------------------------------------------------------------------------------- -->
 
-<style>
-</style>
+<style/>

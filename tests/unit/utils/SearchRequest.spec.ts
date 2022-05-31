@@ -29,11 +29,15 @@ import {
     SAMPLE_TRANSACTIONS
 } from "../Mocks";
 import {SearchRequest} from "@/utils/SearchRequest";
+import {base32ToAlias, byteToHex} from "@/utils/B64Utils";
 
 const mock = new MockAdapter(axios)
 
 const matcher_account = "/api/v1/accounts/" + SAMPLE_ACCOUNT.account
 mock.onGet(matcher_account).reply(200, SAMPLE_ACCOUNT)
+
+const matcher_account_with_alias = "/api/v1/accounts/" + SAMPLE_ACCOUNT.alias
+mock.onGet(matcher_account_with_alias).reply(200, SAMPLE_ACCOUNT)
 
 const matcher_transaction = "/api/v1/transactions/" + SAMPLE_TRANSACTION.transaction_id
 mock.onGet(matcher_transaction).reply(200, SAMPLE_TRANSACTIONS)
@@ -48,6 +52,9 @@ mock.onGet(matcher_topic).reply(200, SAMPLE_TOPIC_MESSAGES)
 const matcher_contracts = "/api/v1/contracts/" + SAMPLE_CONTRACT.contract_id
 mock.onGet(matcher_contracts).reply(200, SAMPLE_CONTRACT)
 
+const matcher_contracts_with_evm_address = "/api/v1/contracts/" + SAMPLE_CONTRACT.evm_address.slice(2)
+mock.onGet(matcher_contracts_with_evm_address).reply(200, SAMPLE_CONTRACT)
+
 
 describe("SearchRequest.ts", () => {
 
@@ -61,6 +68,31 @@ describe("SearchRequest.ts", () => {
         expect(r.tokenInfo).toBeNull()
         expect(r.topicMessages).toStrictEqual([])
         expect(r.contract).toBeNull()
+
+    })
+
+    test("account (with alias)", async () => {
+        const aliasHex = byteToHex(new Uint8Array(base32ToAlias(SAMPLE_ACCOUNT.alias)))
+        const r = new SearchRequest(aliasHex)
+        await r.run()
+
+        expect(r.searchedId).toBe(aliasHex)
+        expect(r.account).toStrictEqual(SAMPLE_ACCOUNT)
+        expect(r.transactions).toStrictEqual([])
+        expect(r.tokenInfo).toBeNull()
+        expect(r.topicMessages).toStrictEqual([])
+        expect(r.contract).toBeNull()
+
+        const aliasHex2 = "0x" + aliasHex
+        const r2 = new SearchRequest(aliasHex2)
+        await r2.run()
+
+        expect(r2.searchedId).toBe(aliasHex2)
+        expect(r2.account).toStrictEqual(SAMPLE_ACCOUNT)
+        expect(r2.transactions).toStrictEqual([])
+        expect(r2.tokenInfo).toBeNull()
+        expect(r2.topicMessages).toStrictEqual([])
+        expect(r2.contract).toBeNull()
 
     })
 
@@ -108,6 +140,19 @@ describe("SearchRequest.ts", () => {
         await r.run()
 
         expect(r.searchedId).toBe(SAMPLE_CONTRACT.contract_id)
+        expect(r.account).toBeNull()
+        expect(r.transactions).toStrictEqual([])
+        expect(r.tokenInfo).toBeNull()
+        expect(r.topicMessages).toStrictEqual([])
+        expect(r.contract).toStrictEqual(SAMPLE_CONTRACT)
+
+    })
+
+    test("contract (with evm address)", async () => {
+        const r = new SearchRequest(SAMPLE_CONTRACT.evm_address)
+        await r.run()
+
+        expect(r.searchedId).toBe(SAMPLE_CONTRACT.evm_address)
         expect(r.account).toBeNull()
         expect(r.transactions).toStrictEqual([])
         expect(r.tokenInfo).toBeNull()
