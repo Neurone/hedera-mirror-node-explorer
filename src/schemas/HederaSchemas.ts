@@ -398,8 +398,8 @@ export interface ContractResponse extends Contract {
 }
 
 export interface TimestampRange {
-    from: string | undefined    // The inclusive from timestamp in seconds
-    to: string | null | undefined   // The exclusive to timestamp in seconds
+    from: string | undefined
+    to: string | null | undefined
 }
 
 export interface ContractResultsResponse {
@@ -429,31 +429,6 @@ export interface NetworkSupplyResponse {
     released_supply:	string | undefined  // The network's released supply of hbars in tinybars
     timestamp:	string | undefined  // The consensus timestamp at which the released supply was valid
     total_supply:	string | undefined  // The network's total supply of hbars in tinybars
-}
-// ---------------------------------------------------------------------------------------------------------------------
-//                                                      Node
-// ---------------------------------------------------------------------------------------------------------------------
-
-export interface NetworkNodesResponse {
-    nodes: [NetworkNode] | undefined
-    links: Links | undefined
-}
-
-export interface NetworkNode {
-    description: string | null | undefined
-    file_id: string | null | undefined   // Network entity ID in the format of shard.realm.num
-    memo: string | undefined
-    node_id: number | undefined
-    node_account_id: string | null | undefined   // Network entity ID in the format of shard.realm.num
-    node_cert_hash: string | null | undefined
-    public_key: string | null | undefined   // hex encoded X509 RSA public key used to sign stream files
-    service_endpoints: [ServiceEndPoint] | undefined
-    timestamp: TimestampRange | undefined
-}
-
-export interface ServiceEndPoint {
-    ip_address_v4: string
-    port: number
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
