@@ -25,7 +25,7 @@
 <template>
 
   <div v-if="isLargeScreen">
-    <div :class="{'h-production-network': isMainnet, 'h-test-network': !isMainnet}"
+    <div :class="{'h-production-network': isProductionNetwork, 'h-test-network': !isProductionNetwork}"
          class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly pb-2">
       <DashboardItem :name="hbarPriceLabel" :value="'$' + hbarPrice" :variation="hbarPriceVariation"/>
       <DashboardItem :name="hbarMarketCapLabel" :value="'$' + hbarMarketCap" :variation="hbarMarketCapVariation"/>
@@ -35,7 +35,7 @@
   </div>
 
   <div v-else-if="isSmallScreen">
-    <div :class="{'h-production-network': isMainnet, 'h-test-network': !isMainnet}"
+    <div :class="{'h-production-network': isProductionNetwork, 'h-test-network': !isProductionNetwork}"
          class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly pb-2">
       <div class="is-flex is-flex-direction-column is-align-items-start">
         <DashboardItem :name="hbarPriceLabel" :value="'$' + hbarPrice" :variation="hbarPriceVariation"/>
@@ -49,7 +49,7 @@
   </div>
 
   <div v-else>
-    <div :class="{'h-production-network': isMainnet, 'h-test-network': !isMainnet}"
+    <div :class="{'h-production-network': isProductionNetwork, 'h-test-network': !isProductionNetwork}"
          class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly pb-2">
       <div class="is-flex is-flex-direction-column is-align-items-start">
         <DashboardItem :name="hbarPriceLabel" :value="'$' + hbarPrice" :variation="hbarPriceVariation"/>
@@ -74,7 +74,7 @@ import {CoinGeckoMarketData} from "@/schemas/CoinGeckoMarketData";
 import {CoinGeckoCache} from "@/components/dashboard/CoinGeckoCache";
 import {NetworkSupplyResponse} from "@/schemas/HederaSchemas";
 import DashboardItem from "@/components/dashboard/DashboardItem.vue";
-import {NetworkRegistry, networkRegistry} from "@/schemas/NetworkRegistry";
+import {networkRegistry} from "@/schemas/NetworkRegistry";
 
 export default defineComponent({
 
@@ -89,7 +89,6 @@ export default defineComponent({
   setup() {
     const isSmallScreen = inject('isSmallScreen', true)
     const isLargeScreen = inject('isLargeScreen', true)
-    const isMainnet = computed(() => networkRegistry.currentNetwork.value == NetworkRegistry.MAINNET_NAME)
 
     const hbarPriceLabel =     'HBAR PRICE'
     const hbarMarketCapLabel = 'HBAR MARKET CAP'
@@ -153,9 +152,9 @@ export default defineComponent({
     }
 
     return {
+      isProductionNetwork: networkRegistry.isProductionNetwork,
       isSmallScreen,
       isLargeScreen,
-      isMainnet,
       hbarPriceLabel,
       hbarMarketCapLabel,
       hbarReleasedLabel,

@@ -18,8 +18,8 @@
  *
  */
 
-import axios from "axios";
-import {ref} from "vue";
+import {computed} from "vue";
+import router from "@/router";
 
 export class NetworkEntry {
 
@@ -36,10 +36,8 @@ export class NetworkEntry {
 
 export class NetworkRegistry {
 
-    public static readonly MAINNET_NAME = 'mainnet'
-    public currentNetwork = ref<string>()
+    public isProductionNetwork = computed(() => router.currentRoute.value.params.network == 'mainnet')
 
-    private static readonly LAST_USED_NETWORK_KEY = 'network'
     private static readonly DEFAULT_NETWORK = 'mainnet'
     private readonly defaultEntry: NetworkEntry
 
@@ -63,7 +61,6 @@ export class NetworkRegistry {
 
     constructor() {
         this.defaultEntry = this.lookup(NetworkRegistry.DEFAULT_NETWORK) ?? this.entries[0]
-        this.currentNetwork.value = this.defaultEntry.name
 
         if (process.env.VUE_APP_LOCAL_MIRROR_NODE_URL) {
             this.entries.push(new NetworkEntry(
@@ -78,19 +75,12 @@ export class NetworkRegistry {
         return this.entries
     }
 
+    public getDefaultEntry(): NetworkEntry {
+        return this.defaultEntry
+    }
+
     public lookup(name: string): NetworkEntry | null {
         return this.entries.find(element => element.name === name) ?? null
-    }
-
-    public getLastUsedNetwork(): string {
-        return localStorage.getItem(NetworkRegistry.LAST_USED_NETWORK_KEY) ?? this.defaultEntry.name
-    }
-
-    public useNetwork(network: string): void {
-        const newEntry = this.lookup(network) ?? this.defaultEntry
-        localStorage.setItem(NetworkRegistry.LAST_USED_NETWORK_KEY, newEntry.name);
-        this.currentNetwork.value = newEntry.name
-        axios.defaults.baseURL = newEntry.url
     }
 }
 
