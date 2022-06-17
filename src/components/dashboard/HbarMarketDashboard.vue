@@ -25,7 +25,7 @@
 <template>
 
   <div v-if="isLargeScreen">
-    <div class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly h-top-banner py-2">
+    <div class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly h-top-banner pb-2">
       <DashboardItem :name="hbarPriceLabel" :value="'$' + hbarPrice" :variation="hbarPriceVariation"/>
       <DashboardItem :name="hbarMarketCapLabel" :value="'$' + hbarMarketCap" :variation="hbarMarketCapVariation"/>
       <DashboardItem :name="hbarReleasedLabel" :value="hbarReleased"/>
@@ -34,7 +34,7 @@
   </div>
 
   <div v-else-if="isSmallScreen">
-    <div class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly h-top-banner py-2">
+    <div class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly h-top-banner pb-2">
       <div class="is-flex is-flex-direction-column is-align-items-start">
         <DashboardItem :name="hbarPriceLabel" :value="'$' + hbarPrice" :variation="hbarPriceVariation"/>
         <DashboardItem :name="hbarMarketCapLabel" :value="'$' + hbarMarketCap" :variation="hbarMarketCapVariation"/>
@@ -47,7 +47,7 @@
   </div>
 
   <div v-else>
-    <div class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly h-top-banner py-2">
+    <div class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly h-top-banner pb-2">
       <div class="is-flex is-flex-direction-column is-align-items-start">
         <DashboardItem :name="hbarPriceLabel" :value="'$' + hbarPrice" :variation="hbarPriceVariation"/>
         <DashboardItem :name="hbarMarketCapLabel" :value="'$' + hbarMarketCap" :variation="hbarMarketCapVariation"/>
