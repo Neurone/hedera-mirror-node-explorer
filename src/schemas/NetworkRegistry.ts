@@ -19,6 +19,7 @@
  */
 
 import axios from "axios";
+import {ref} from "vue";
 
 export class NetworkEntry {
 
@@ -34,6 +35,9 @@ export class NetworkEntry {
 }
 
 export class NetworkRegistry {
+
+    public static readonly MAINNET_NAME = 'mainnet'
+    public currentNetwork = ref<string>()
 
     private static readonly LAST_USED_NETWORK_KEY = 'network'
     private static readonly DEFAULT_NETWORK = 'testnet'
@@ -59,6 +63,7 @@ export class NetworkRegistry {
 
     constructor() {
         this.defaultEntry = this.lookup(NetworkRegistry.DEFAULT_NETWORK) ?? this.entries[0]
+        this.currentNetwork.value = this.defaultEntry.name
 
         if (process.env.VUE_APP_LOCAL_MIRROR_NODE_URL) {
             this.entries.push(new NetworkEntry(
@@ -84,6 +89,7 @@ export class NetworkRegistry {
     public useNetwork(network: string): void {
         const newEntry = this.lookup(network) ?? this.defaultEntry
         localStorage.setItem(NetworkRegistry.LAST_USED_NETWORK_KEY, newEntry.name);
+        this.currentNetwork.value = newEntry.name
         axios.defaults.baseURL = newEntry.url
     }
 }

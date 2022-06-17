@@ -24,7 +24,8 @@
     <TopNavBar/>
   </section>
 
-  <hr class="h-top-banner" style="margin: 0; height: 4px"/>
+  <hr :class="{'h-mainnet-color': isMainnet, 'h-testnet-color': !isMainnet}"
+      class="h-thick-separator">
 
   <router-view/>
 
@@ -36,6 +37,7 @@ import {computed, defineComponent, onBeforeUnmount, onMounted, provide, ref} fro
 import TopNavBar from "@/components/TopNavBar.vue";
 import {errorKey, explanationKey, initialLoadingKey, loadingKey, suggestionKey} from "@/AppKeys"
 import {AxiosMonitor} from "@/utils/AxiosMonitor"
+import {NetworkRegistry, networkRegistry} from "@/schemas/NetworkRegistry";
 
 export const XLARGE_BREAKPOINT = 1450
 export const LARGE_BREAKPOINT = 1280
@@ -50,6 +52,8 @@ export default defineComponent({
   components: {TopNavBar},
 
   setup() {
+    const isMainnet = computed(() => networkRegistry.currentNetwork.value == NetworkRegistry.MAINNET_NAME)
+
     const buildTime = document.documentElement.dataset.buildTimestampUtc ?? "not available"
     provide('buildTime', buildTime)
 
@@ -91,6 +95,9 @@ export default defineComponent({
     onBeforeUnmount(() => {
       window.removeEventListener('resize', onResizeHandler);
     })
+    return {
+      isMainnet
+    }
   },
 });
 </script>
