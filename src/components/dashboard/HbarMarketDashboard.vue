@@ -25,7 +25,7 @@
 <template>
 
   <div v-if="isLargeScreen">
-    <div :class="{'h-mainnet-color': isMainnet, 'h-testnet-color': !isMainnet}"
+    <div :class="{'h-production-network': isMainnet, 'h-test-network': !isMainnet}"
          class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly pb-2">
       <DashboardItem :name="hbarPriceLabel" :value="'$' + hbarPrice" :variation="hbarPriceVariation"/>
       <DashboardItem :name="hbarMarketCapLabel" :value="'$' + hbarMarketCap" :variation="hbarMarketCapVariation"/>
@@ -35,7 +35,7 @@
   </div>
 
   <div v-else-if="isSmallScreen">
-    <div :class="{'h-mainnet-color': isMainnet, 'h-testnet-color': !isMainnet}"
+    <div :class="{'h-production-network': isMainnet, 'h-test-network': !isMainnet}"
          class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly pb-2">
       <div class="is-flex is-flex-direction-column is-align-items-start">
         <DashboardItem :name="hbarPriceLabel" :value="'$' + hbarPrice" :variation="hbarPriceVariation"/>
@@ -49,7 +49,7 @@
   </div>
 
   <div v-else>
-    <div :class="{'h-mainnet-color': isMainnet, 'h-testnet-color': !isMainnet}"
+    <div :class="{'h-production-network': isMainnet, 'h-test-network': !isMainnet}"
          class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly pb-2">
       <div class="is-flex is-flex-direction-column is-align-items-start">
         <DashboardItem :name="hbarPriceLabel" :value="'$' + hbarPrice" :variation="hbarPriceVariation"/>

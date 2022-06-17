@@ -278,12 +278,12 @@ a.button.is-ghost.is-last {
     background: $h-separator-color;
 }
 
-.h-mainnet-color {
-    background: $h-mainnet-color;
+.h-production-network {
+    background: $h-production-network-color;
 }
 
-.h-testnet-color {
-    background: $h-testnet-color;
+.h-test-network {
+    background: $h-test-network-color;
 }
 
 .h-card-separator {

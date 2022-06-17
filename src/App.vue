@@ -24,7 +24,7 @@
     <TopNavBar/>
   </section>
 
-  <hr :class="{'h-mainnet-color': isMainnet, 'h-testnet-color': !isMainnet}"
+  <hr :class="{'h-production-network': isMainnet, 'h-test-network': !isMainnet}"
       class="h-thick-separator">
 
   <router-view/>
