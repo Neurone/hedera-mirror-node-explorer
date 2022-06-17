@@ -40,7 +40,7 @@ export class NetworkRegistry {
     public currentNetwork = ref<string>()
 
     private static readonly LAST_USED_NETWORK_KEY = 'network'
-    private static readonly DEFAULT_NETWORK = 'testnet'
+    private static readonly DEFAULT_NETWORK = 'mainnet'
     private readonly defaultEntry: NetworkEntry
 
     private readonly entries: NetworkEntry[] = [
