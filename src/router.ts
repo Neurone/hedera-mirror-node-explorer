@@ -184,15 +184,27 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to) => {
+router.beforeEach((to, from) => {
   let result: boolean | string
 
   const toEntry = getNetworkEntryFromRoute(to)
+  const fromEntry = getNetworkEntryFromRoute(from)
   if (toEntry !== null) {
-    // Network is valid => updates AppStorage and axios
-    result = true
+    // Network is valid
     AppStorage.setLastNetwork(toEntry)
     axios.defaults.baseURL = toEntry.url
+    if (fromEntry != null && fromEntry != toEntry) {
+      // Network is changing => updates AppStorage and axios
+      if (to.name != "MainDashboard" && to.name != "PageNotFound") {
+        // We re-route on MainDashboard
+        result = "/" + toEntry.name + "/dashboard"
+      }
+      else {
+        result = true
+      }
+    } else (
+        result = true
+    )
   } else {
     // Network is invalid => page not found
     result = '/page-not-found'

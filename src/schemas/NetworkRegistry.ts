@@ -18,6 +18,9 @@
  *
  */
 
+import {computed} from "vue";
+import router from "@/router";
+
 export class NetworkEntry {
 
     public readonly name: string
@@ -33,7 +36,9 @@ export class NetworkEntry {
 
 export class NetworkRegistry {
 
-    private static readonly DEFAULT_NETWORK = 'testnet'
+    public isProductionNetwork = computed(() => router.currentRoute.value.params.network == 'mainnet')
+
+    private static readonly DEFAULT_NETWORK = 'mainnet'
     private readonly defaultEntry: NetworkEntry
 
     private readonly entries: NetworkEntry[] = [

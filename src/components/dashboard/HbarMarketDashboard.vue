@@ -25,7 +25,8 @@
 <template>
 
   <div v-if="isLargeScreen">
-    <div class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly h-top-banner py-2">
+    <div :class="{'h-production-network': isProductionNetwork, 'h-test-network': !isProductionNetwork}"
+         class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly pb-2">
       <DashboardItem :name="hbarPriceLabel" :value="'$' + hbarPrice" :variation="hbarPriceVariation"/>
       <DashboardItem :name="hbarMarketCapLabel" :value="'$' + hbarMarketCap" :variation="hbarMarketCapVariation"/>
       <DashboardItem :name="hbarReleasedLabel" :value="hbarReleased"/>
@@ -34,7 +35,8 @@
   </div>
 
   <div v-else-if="isSmallScreen">
-    <div class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly h-top-banner py-2">
+    <div :class="{'h-production-network': isProductionNetwork, 'h-test-network': !isProductionNetwork}"
+         class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly pb-2">
       <div class="is-flex is-flex-direction-column is-align-items-start">
         <DashboardItem :name="hbarPriceLabel" :value="'$' + hbarPrice" :variation="hbarPriceVariation" :is-numeric="true"/>
         <DashboardItem :name="hbarMarketCapLabel" :value="'$' + hbarMarketCap" :variation="hbarMarketCapVariation" :is-numeric="true"/>
@@ -47,7 +49,8 @@
   </div>
 
   <div v-else>
-    <div class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly h-top-banner py-2">
+    <div :class="{'h-production-network': isProductionNetwork, 'h-test-network': !isProductionNetwork}"
+         class="is-flex is-flex-wrap-wrap is-justify-content-space-evenly pb-2">
       <div class="is-flex is-flex-direction-column is-align-items-start">
         <DashboardItem :name="hbarPriceLabel" :value="'$' + hbarPrice" :variation="hbarPriceVariation" :is-numeric="true"/>
         <DashboardItem :name="hbarMarketCapLabel" :value="'$' + hbarMarketCap" :variation="hbarMarketCapVariation" :is-numeric="true"/>
@@ -71,6 +74,7 @@ import {CoinGeckoMarketData} from "@/schemas/CoinGeckoMarketData";
 import {CoinGeckoCache} from "@/components/dashboard/CoinGeckoCache";
 import {NetworkSupplyResponse} from "@/schemas/HederaSchemas";
 import DashboardItem from "@/components/dashboard/DashboardItem.vue";
+import router from "@/router";
 
 export default defineComponent({
 
@@ -147,7 +151,10 @@ export default defineComponent({
           })
     }
 
+    const isProductionNetwork = computed(() => router.currentRoute.value.params.network == 'mainnet')
+
     return {
+      isProductionNetwork,
       isSmallScreen,
       isLargeScreen,
       hbarPriceLabel,
