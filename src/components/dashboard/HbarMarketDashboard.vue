@@ -74,7 +74,7 @@ import {CoinGeckoMarketData} from "@/schemas/CoinGeckoMarketData";
 import {CoinGeckoCache} from "@/components/dashboard/CoinGeckoCache";
 import {NetworkSupplyResponse} from "@/schemas/HederaSchemas";
 import DashboardItem from "@/components/dashboard/DashboardItem.vue";
-import {networkRegistry} from "@/schemas/NetworkRegistry";
+import router from "@/router";
 
 export default defineComponent({
 
@@ -151,8 +151,10 @@ export default defineComponent({
           })
     }
 
+    const isProductionNetwork = computed(() => router.currentRoute.value.params.network == 'mainnet')
+
     return {
-      isProductionNetwork: networkRegistry.isProductionNetwork,
+      isProductionNetwork,
       isSmallScreen,
       isLargeScreen,
       hbarPriceLabel,
